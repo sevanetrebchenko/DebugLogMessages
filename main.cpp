@@ -43,8 +43,14 @@ void kickstart() {
 }
 
 int main(int argc, char** argv) {
+    std::cout << "Single-line log messages: " << std::endl;
+    std::cout << "---------------------------------------------------------------------------------------" << std::endl;
     test1();
     test2();
+    std::cout << std::endl;
+
+    std::cout << "Multi-line log messages: " << std::endl;
+    std::cout << "---------------------------------------------------------------------------------------" << std::endl;
     kickstart();
     return 0;
 }

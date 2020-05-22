@@ -1,6 +1,7 @@
 #ifndef SANDBOX_LOGMESSAGE_H
 #define SANDBOX_LOGMESSAGE_H
-#include <memory> // unique ptr
+#include <memory>   // unique_ptr
+#include <cstring>  // strrchr
 
 //#define DEBUG_MESSAGES
 
@@ -32,10 +33,12 @@ class DBG_LOG_MESSAGE {
         std::unique_ptr<LogMessageData> _data;
 };
 
+#define __FILENAME__ (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
+
 #undef LogMessage
 #define LogMessage DBG_LOG_MESSAGE
 #undef Supply
-#define Supply(formatString, ...) SUPPLY_DBG(__PRETTY_FUNCTION__, __FILE__, __LINE__, formatString, ##__VA_ARGS__)
+#define Supply(formatString, ...) SUPPLY_DBG(__PRETTY_FUNCTION__, __FILENAME__, __LINE__, formatString, ##__VA_ARGS__)
 #endif
 
 #endif //SANDBOX_LOGMESSAGE_H

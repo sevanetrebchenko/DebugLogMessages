@@ -111,7 +111,7 @@ std::ostream &operator<<(std::ostream &os, const DBG_LOG_MESSAGE &message) {
         std::string& msg = message._data->_messages[i];
         auto& calleeInfo = message._data->_calleeInformation[i];
         os << "Supply() called in function: " << calleeInfo._function << ", at " << calleeInfo._file << ":" << calleeInfo._line << std::endl;
-        os << "Severity: " << message._data->_severity << ", Message: " << msg << std::endl;
+        os << "\tSeverity: " << message._data->_severity << ", Message: " << msg << std::endl;
     }
 
     return os;
