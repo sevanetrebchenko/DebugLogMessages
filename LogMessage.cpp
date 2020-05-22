@@ -7,6 +7,17 @@
 
 // LogMessageData begin
 class LogMessage::LogMessageData {
+    private:
+        unsigned _processingBufferSize;
+        char* _processingBuffer;
+#ifdef DEBUG_MESSAGES
+        struct LogDebugInformation {
+            LogDebugInformation(std::string&& file, std::string&& function, unsigned line);
+            std::string _file;
+            std::string _function;
+            unsigned _line;
+        };
+#endif
     public:
         explicit LogMessageData(unsigned messageSeverity);
         ~LogMessageData();
@@ -15,28 +26,13 @@ class LogMessage::LogMessageData {
 #else
         void ProcessMessage(const char* formatString, std::va_list argList);
 #endif
-    private:
-#ifdef DEBUG_MESSAGES
-    struct LogDebugInformation {
-                LogDebugInformation(std::string&& file, std::string&& function, unsigned line);
-                std::string _file;
-                std::string _function;
-                unsigned _line;
-            };
-#endif
 
-    public:
         std::vector<std::string> _messages;
-
 #ifdef DEBUG_MESSAGES
     std::vector<LogDebugInformation> _calleeInformation;
 #endif
         unsigned _severity;
 
-    private:
-        std::stringstream _format;
-        unsigned _processingBufferSize;
-        char* _processingBuffer;
 };
 
 
@@ -114,7 +110,7 @@ std::ostream &operator<<(std::ostream &os, const DBG_LOG_MESSAGE &message) {
     for (unsigned i = 0; i < size; ++i) {
         std::string& msg = message._data->_messages[i];
         auto& calleeInfo = message._data->_calleeInformation[i];
-        os << "Supply() called in function: " << calleeInfo._function << "(), at " << calleeInfo._file << ":" << calleeInfo._line << std::endl;
+        os << "Supply() called in function: " << calleeInfo._function << ", at " << calleeInfo._file << ":" << calleeInfo._line << std::endl;
         os << "Severity: " << message._data->_severity << ", Message: " << msg << std::endl;
     }
 

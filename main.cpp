@@ -15,8 +15,36 @@ void test2() {
     std::cout << foo << std::endl;
 }
 
+
+void testMultiple4(LogMessage& foo) {
+    foo.Supply("from testMultiple4 with exponent: %e", 6.5);
+}
+
+void testMultiple3(LogMessage& foo) {
+    foo.Supply("from testMultiple3 with hex number: %x", 14);
+    testMultiple4(foo);
+}
+
+void testMultiple2(LogMessage& foo) {
+    foo.Supply("from testMultiple2 with character: %c", '?');
+    testMultiple3(foo);
+}
+
+void testMultiple1(LogMessage& foo) {
+    foo.Supply("from testMultiple1 with floating point: %f", 0.24);
+    testMultiple2(foo);
+}
+
+void kickstart() {
+    LogMessage foo(16);
+    foo.Supply("from kickstart with number: %i", 235);
+    testMultiple1(foo);
+    std::cout << foo << std::endl;
+}
+
 int main(int argc, char** argv) {
     test1();
     test2();
+    kickstart();
     return 0;
 }
