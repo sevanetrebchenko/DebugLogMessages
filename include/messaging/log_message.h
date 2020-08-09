@@ -53,22 +53,12 @@ namespace Messaging {
             void Supply(const char* formatString, ...);
 
             /**
-            * Get a reference to the store of log record information this LogMessage instance holds.
-            * @return Reference to LogMessage data.
-            */
-            _NODISCARD_ std::vector<LogRecord>& GetLogRecords();
-
-            /**
-            * Get the severity of this message.
-            * @return Severity of this message.
-            */
-            _NODISCARD_ LogMessageSeverity& GetMessageSeverity();
-
-            /**
-            * Update the message severity. Can be used anytime before the message is logged.
-            * @param messageSeverity - New message severity.
-            */
-            void SetMessageSeverity(LogMessageSeverity messageSeverity);
+             * Print out the log message to the provided stream.
+             * @param stream
+             * @param message
+             * @return
+             */
+            friend std::ostream& operator<<(std::ostream& stream, const LogMessage& message);
 
         private:
             // Storage for LogMessage data, back-end functionality, and helper functions.
@@ -133,22 +123,12 @@ namespace Messaging {
             void SUPPLY_DBG(std::string callingFunction, std::string fileName, int lineNumber, const char* formatString, ...);
 
             /**
-            * Get a reference to the store of log record information this LogMessage instance holds.
-            * @return Reference to LogMessage data.
-            */
-            _NODISCARD_ std::vector<LogRecord>& GetLogRecords();
-
-            /**
-            * Get the severity of this message.
-            * @return Severity of this message.
-            */
-            _NODISCARD_ LogMessageSeverity& GetMessageSeverity();
-
-            /**
-            * Update the message severity. Can be used anytime before the message is logged.
-            * @param messageSeverity - New message severity.
-            */
-            void SetMessageSeverity(LogMessageSeverity messageSeverity);
+             * Print out the log message to the provided stream.
+             * @param stream
+             * @param message
+             * @return
+             */
+            friend std::ostream& operator<<(std::ostream& stream, const DBG_LOG_MESSAGE& message);
 
         private:
             // Storage for LogMessage data, back-end functionality, and helper functions.

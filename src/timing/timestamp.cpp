@@ -15,16 +15,20 @@ namespace Timing {
          */
         explicit TimeStampData(const std::chrono::time_point<std::chrono::high_resolution_clock>& timestamp);
 
+        static std::chrono::time_point<std::chrono::high_resolution_clock> _initializationTime;
+
         std::chrono::time_point<std::chrono::high_resolution_clock> _raw; // Raw timestamp object from std::chrono library
         unsigned _milliseconds; // Millisecond portion of the raw timestamp
         unsigned _seconds;      // Second portion of the raw timestamp
         unsigned _minutes;      // Minute portion of the raw timestamp
     };
 
+    std::chrono::time_point<std::chrono::high_resolution_clock> Timing::TimeStamp::TimeStampData::_initializationTime = std::chrono::time_point<std::chrono::high_resolution_clock>::min();
+
     // Construct the back-end for timestamp processing.
     TimeStamp::TimeStampData::TimeStampData(const std::chrono::time_point<std::chrono::high_resolution_clock>& timestamp) : _raw(timestamp) {
         // Get the total timestamp time in seconds.
-        double elapsedSeconds = (std::chrono::duration_cast<std::chrono::duration<double>>(_raw - Logger::LoggingHub::GetInstance()->GetLoggingInitializationTime())).count();
+        double elapsedSeconds = (std::chrono::duration_cast<std::chrono::duration<double>>(_raw - _initializationTime)).count();
 
         // Get the fractional part of seconds
         double whole = std::floor(elapsedSeconds);
@@ -98,10 +102,14 @@ namespace Timing {
 
         // Append milliseconds into stream.
         format << std::setfill('0') << std::setw(4);
-        format << stamp._data->_milliseconds << "ms ";
+        format << stamp._data->_milliseconds << "ms";
 
         os << format.str();
         format.str(std::string());
         return os;
+    }
+
+    void TimeStamp::Initialize() {
+        TimeStampData::_initializationTime = std::chrono::high_resolution_clock::now();
     }
 }

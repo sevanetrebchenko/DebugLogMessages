@@ -41,22 +41,11 @@ namespace Messaging {
         #endif
 
             /**
-             * Get a reference to the store of log record information this LogMessage instance holds.
-             * @return Reference to LogMessage data.
+             * Print out the log message to the provided stream.
+             * @param stream  - Stream to print to.
+             * @return Stream with message data.
              */
-            _NODISCARD_ std::vector<LogRecord>& GetLogRecords();
-
-            /**
-             * Get the severity of this message.
-             * @return Severity of this message.
-             */
-            _NODISCARD_ LogMessageSeverity& GetMessageSeverity();
-
-            /**
-             * Update the message severity. Can be used anytime before the message is logged.
-             * @param messageSeverity - New message severity.
-             */
-            void SetMessageSeverity(LogMessageSeverity& messageSeverity);
+            std::ostream& PrintMessage(std::ostream& stream);
 
         private:
             std::vector<LogRecord> _logMessages; // Store of log record information
@@ -79,21 +68,6 @@ namespace Messaging {
         delete [] _processingBuffer;
     }
 
-    // Get a reference to the store of log record information this LogMessage instance holds.
-    std::vector<LogMessage::LogRecord>& LogMessage::LogMessageData::GetLogRecords() {
-        return _logMessages;
-    }
-
-    // Get the severity of this message.
-    LogMessageSeverity &LogMessage::LogMessageData::GetMessageSeverity() {
-        return _messageSeverity;
-    }
-
-    // Update the message severity. Can be used anytime before the message is logged.
-    void LogMessage::LogMessageData::SetMessageSeverity(LogMessageSeverity &messageSeverity) {
-        _messageSeverity = messageSeverity;
-    }
-
 
     //------------------------------------------------------------------------------------------------------------------
     // LOG MESSAGE
@@ -108,19 +82,28 @@ namespace Messaging {
         delete _data;
     }
 
-    // Get a reference to the store of log record information this LogMessage instance holds.
-    std::vector<LogMessage::LogRecord>& LogMessage::GetLogRecords() {
-        return _data->GetLogRecords();
-    }
+    std::ostream &LogMessage::LogMessageData::PrintMessage(std::ostream &stream) {
+        switch (_messageSeverity) {
+            case LogMessageSeverity::DEBUG:
+                stream << "[ DEBUG ]" << std::endl;
+                break;
+            case LogMessageSeverity::WARNING:
+                stream << "[ WARNING ]" << std::endl;
+                break;
+            case LogMessageSeverity::SEVERE:
+                stream << "[ SEVERE ]" << std::endl;
+                break;
+        }
 
-    // Get the severity of this message.
-    LogMessageSeverity& LogMessage::GetMessageSeverity() {
-        return _data->GetMessageSeverity();
-    }
+        // Print out given messages: [0000m 0000s 00000ms] - MESSAGE
+        for (auto& logRecord : _logMessages) {
+            stream << "[ " << logRecord._timestamp << " ] - " << logRecord._message << std::endl;
+        #ifdef DEBUG_MESSAGES
+            stream << "\t: called from file: " << logRecord._calleeInformation._fileName << ", at " << logRecord._calleeInformation._functionName << ":" << logRecord._calleeInformation._lineNumber << std::endl;
+        #endif
+        }
 
-    // Update the message severity. Can be used anytime before the message is logged.
-    void LogMessage::SetMessageSeverity(LogMessageSeverity messageSeverity) {
-        _data->SetMessageSeverity(messageSeverity);
+        return stream;
     }
 
 #ifdef DEBUG_MESSAGES
@@ -145,6 +128,11 @@ namespace Messaging {
         va_start(args, formatString);
         _data->ProcessMessage(formatString, args, DBG_LOG_RECORD(std::move(callingFunction), std::move(fileName), lineNumber));
         va_end(args);
+    }
+
+    std::ostream &operator<<(std::ostream &stream, const DBG_LOG_MESSAGE &message) {
+        message._data->PrintMessage(stream);
+        return stream;
     }
 
     // Helper function to process printf-like message with variadic arguments.
@@ -190,6 +178,11 @@ namespace Messaging {
         va_end(args);
     }
 
+    std::ostream &operator<<(std::ostream &stream, const LogMessage &message) {
+        message._data->PrintMessage(stream);
+        return stream;
+    }
+
     // Helper function to process printf-like message with variadic arguments.
     void LogMessage::LogMessageData::ProcessMessage(const char* formatString, std::va_list argList) {
         unsigned currentBufferSize = _processingBufferSize;
@@ -211,8 +204,7 @@ namespace Messaging {
         // Reallocate buffer.
         if (currentBufferSize != _processingBufferSize) {
             delete [] _processingBuffer;
-            _processingBuffer = new(std::nothrow) char[_processingBufferSize];
-            ASSERT(_processingBuffer != nullptr, "Operation new failed to re-allocate log message processing buffer - program is out of memory.");
+            _processingBuffer = new char[_processingBufferSize];
         }
 
         vsnprintf(_processingBuffer, _processingBufferSize, formatString, argList);

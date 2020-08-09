@@ -2,12 +2,19 @@
 #ifndef TIMING_TIMESTAMP_H
 #define TIMING_TIMESTAMP_H
 
-#include <global_includes>
+#include <global_includes.h> // _NODISCARD_
+#include <ostream>            // std::ostream
 
 namespace Timing {
 
     class TimeStamp {
         public:
+            /**
+             * Sets the base initialization time for all timestamps to base off of.
+             * @return
+             */
+            static void Initialize();
+
             /**
             * Constructor for a timestamp. Uses std::chrono::high_resolution_clock::now() (time when constructor was
             * called) as the time record.
