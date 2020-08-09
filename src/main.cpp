@@ -1,4 +1,4 @@
-#include "include/messaging/log_message.h"
+#include "messaging/log_message.h"
 #include <iostream>
 
 class Test {

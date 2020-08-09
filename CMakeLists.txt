@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(PROJECT_SOURCE_FILES
         "${PROJECT_SOURCE_DIR}/src/messaging/log_message.cpp"
         "${PROJECT_SOURCE_DIR}/src/timing/timestamp.cpp"
-        main.cpp
+        "${PROJECT_SOURCE_DIR}/src/main.cpp"
         )
 
 add_executable(LogMessages ${PROJECT_SOURCE_FILES})
