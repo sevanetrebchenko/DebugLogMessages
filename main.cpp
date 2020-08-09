@@ -1,5 +1,16 @@
-#include "LogMessage.h"
+#include "include/messaging/log_message.h"
 #include <iostream>
+
+class Test {
+    public:
+        Test();
+};
+
+Test::Test() {
+    LogMessage foo(40);
+    foo.Supply("hello from test.");
+    std::cout << foo << std::endl;
+}
 
 void test1() {
     // captured return value test
@@ -14,7 +25,6 @@ void test2() {
     foo.Supply("hello from test 2, here's a sentence: %s", "\"incredible!\"");
     std::cout << foo << std::endl;
 }
-
 
 void testMultiple4(LogMessage& foo) {
     foo.Supply("from testMultiple4 with exponent: %e", 6.5);
@@ -47,6 +57,7 @@ int main(int argc, char** argv) {
     std::cout << "---------------------------------------------------------------------------------------" << std::endl;
     test1();
     test2();
+    Test *a = new Test();
     std::cout << std::endl;
 
     std::cout << "Multi-line log messages: " << std::endl;
